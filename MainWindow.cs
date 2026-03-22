@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Czyscik
             btnStart.Click += BtnStart_Click;
             btnPreview.Click += BtnPreview_Click;
             btnCheckUpdates.Click += BtnCheckUpdates_Click;
+            btnOpenDryRun.Click += BtnOpenDryRun_Click;
             cmbProfile.SelectionChanged += CmbProfile_SelectionChanged;
             btnSchedule.Click += BtnSchedule_Click;
             btnCancel.Click += BtnCancel_Click;
@@ -294,6 +296,24 @@ namespace Czyscik
         }
 
         private void BtnRefreshLog_Click(object sender, RoutedEventArgs e) => LoadLogToTextbox();
+
+        private void BtnOpenDryRun_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Czyscik");
+                if (!Directory.Exists(dir)) { MessageBox.Show("Brak raportów Dry-Run.", "Dry-Run", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+                var files = Directory.GetFiles(dir, "dryrun_*.json");
+                if (files == null || files.Length == 0) { MessageBox.Show("Brak raportów Dry-Run.", "Dry-Run", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+                var last = files.OrderByDescending(f => File.GetCreationTimeUtc(f)).First();
+                var psi = new ProcessStartInfo(last) { UseShellExecute = true };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nie można otworzyć raportu: " + ex.Message, "Dry-Run", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void LoadLogToTextbox()
         {

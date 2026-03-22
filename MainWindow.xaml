@@ -72,6 +72,7 @@
             <TextBlock x:Name="lblLog" Text="Log:" Margin="0,6" />
             <DockPanel>
                 <Button x:Name="btnRefreshLog" Content="Odśwież log" Width="100" DockPanel.Dock="Left" />
+                <Button x:Name="btnOpenDryRun" Content="Otwórz ostatni raport Dry-Run" Width="220" DockPanel.Dock="Left" Margin="6,0,0,0" />
             </DockPanel>
             <TextBox x:Name="txtLog" Height="160" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Margin="0,6" />
         </StackPanel>
