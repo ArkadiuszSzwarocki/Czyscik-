@@ -22,6 +22,7 @@ namespace Czyscik
             btnStart.Click += BtnStart_Click;
             btnPreview.Click += BtnPreview_Click;
             btnCheckUpdates.Click += BtnCheckUpdates_Click;
+            btnSchedule.Click += BtnSchedule_Click;
             btnCancel.Click += BtnCancel_Click;
             btnAdd.Click += BtnAdd_Click;
             btnPick.Click += BtnPick_Click;
@@ -29,6 +30,21 @@ namespace Czyscik
             btnDetails.Click += BtnDetails_Click;
             btnAutostart.Click += BtnAutostart_Click;
             btnRefreshLog.Click += BtnRefreshLog_Click;
+        }
+
+        private async void BtnSchedule_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                btnSchedule.IsEnabled = false;
+                var exe = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+                if (string.IsNullOrEmpty(exe)) { MessageBox.Show("Nie można odnaleźć ścieżki do aplikacji.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                var ok = await Scheduler.CreateDailyTaskAsync("Czyscik - Daily", exe, "03:00");
+                if (ok) { MessageBox.Show("Zadanie harmonogramu utworzone.", "Harmonogram", MessageBoxButton.OK, MessageBoxImage.Information); Cleaner.Log("SCHED|CREATED"); }
+                else { MessageBox.Show("Nie udało się utworzyć zadania. Sprawdź uprawnienia.", "Harmonogram", MessageBoxButton.OK, MessageBoxImage.Warning); Cleaner.Log("SCHED|FAILED"); }
+            }
+            catch (Exception ex) { MessageBox.Show("Błąd: " + ex.Message, "Harmonogram", MessageBoxButton.OK, MessageBoxImage.Error); Cleaner.Log("SCHED|ERR|" + ex.Message); }
+            finally { btnSchedule.IsEnabled = true; }
         }
 
         private async void BtnCheckUpdates_Click(object? sender, RoutedEventArgs e)
