@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
+using System.Windows.Controls;
 using Microsoft.Win32;
 
 namespace Czyscik
@@ -22,6 +23,7 @@ namespace Czyscik
             btnStart.Click += BtnStart_Click;
             btnPreview.Click += BtnPreview_Click;
             btnCheckUpdates.Click += BtnCheckUpdates_Click;
+            cmbProfile.SelectionChanged += CmbProfile_SelectionChanged;
             btnSchedule.Click += BtnSchedule_Click;
             btnCancel.Click += BtnCancel_Click;
             btnAdd.Click += BtnAdd_Click;
@@ -30,6 +32,36 @@ namespace Czyscik
             btnDetails.Click += BtnDetails_Click;
             btnAutostart.Click += BtnAutostart_Click;
             btnRefreshLog.Click += BtnRefreshLog_Click;
+        }
+
+        private void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var sel = (cmbProfile.SelectedItem as ComboBoxItem)?.Content as string ?? "Standard";
+                switch (sel)
+                {
+                    case "Bezpieczny":
+                        chkPrefetch.IsChecked = false;
+                        chkWindowsUpdate.IsChecked = false;
+                        chkExpertMode.IsChecked = false;
+                        chkBrowsers.IsChecked = false;
+                        chkConfirmEach.IsChecked = true;
+                        break;
+                    case "Agresywny":
+                        chkPrefetch.IsChecked = true;
+                        chkWindowsUpdate.IsChecked = true;
+                        chkExpertMode.IsChecked = true;
+                        chkBrowsers.IsChecked = true;
+                        chkConfirmEach.IsChecked = false;
+                        break;
+                    default: // Standard
+                        // leave existing defaults; ensure confirm enabled
+                        chkConfirmEach.IsChecked = true;
+                        break;
+                }
+            }
+            catch { }
         }
 
         private async void BtnSchedule_Click(object? sender, RoutedEventArgs e)

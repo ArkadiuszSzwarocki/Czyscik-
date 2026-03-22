@@ -27,6 +27,14 @@
             <CheckBox x:Name="chkExpertBrowsers" Content="Expert: Cache przeglądarek dodatkowe" Margin="16,2,0,0" IsChecked="False" />
             <CheckBox x:Name="chkExpertLaunchers" Content="Expert: Cache launcherów gier (Steam, Epic)" Margin="16,2,0,0" IsChecked="False" />
             <CheckBox x:Name="chkExpertCrashDumps" Content="Expert: Crash dumps (Minidump, CrashDumps)" Margin="16,2,0,0" IsChecked="False" />
+            <StackPanel Orientation="Horizontal" Margin="0,4" VerticalAlignment="Center">
+                <TextBlock Text="Profil:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ComboBox x:Name="cmbProfile" Width="160" SelectedIndex="1">
+                    <ComboBoxItem>Bezpieczny</ComboBoxItem>
+                    <ComboBoxItem>Standard</ComboBoxItem>
+                    <ComboBoxItem>Agresywny</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
             <CheckBox x:Name="chkConfirmEach" Content="Potwierdzenie przed czyszczeniem każdego katalogu" Margin="0,4" />
             <WrapPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Left" ItemHeight="30" ItemWidth="110">
                 <Button x:Name="btnStart" Content="Start" Width="110" />
