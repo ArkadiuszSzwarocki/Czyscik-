@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Czyscik")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0044b3257a9e2b05d6741f321180a1bdc4b9ae03")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0f21c1e8f04c105413f2d08635b1afa47b4516e1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Czyscik")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Czyscik")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

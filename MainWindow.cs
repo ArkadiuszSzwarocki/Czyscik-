@@ -94,6 +94,15 @@ namespace Czyscik
                 if (!lstPaths.Items.Contains(temp)) lstPaths.Items.Add(temp);
                 var winTemp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Temp");
                 if (!lstPaths.Items.Contains(winTemp)) lstPaths.Items.Add(winTemp);
+                // Auto-detect user profile folders (Downloads, Desktop)
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                if (!string.IsNullOrWhiteSpace(userProfile))
+                {
+                    var downloads = Path.Combine(userProfile, "Downloads");
+                    var desktop = Path.Combine(userProfile, "Desktop");
+                    if (Directory.Exists(downloads) && !lstPaths.Items.Contains(downloads)) lstPaths.Items.Add(downloads);
+                    if (Directory.Exists(desktop) && !lstPaths.Items.Contains(desktop)) lstPaths.Items.Add(desktop);
+                }
                 LoadLogToTextbox();
             }
             catch { }
