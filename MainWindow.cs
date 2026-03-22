@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
+using WinForms = System.Windows.Forms;
+using System.Drawing;
 using System.Windows.Controls;
 using Microsoft.Win32;
 
@@ -14,6 +16,7 @@ namespace Czyscik
     public partial class MainWindow : Window
     {
         private CancellationTokenSource? cts;
+        private WinForms.NotifyIcon? notifyIcon;
 
         public MainWindow()
         {
@@ -32,6 +35,56 @@ namespace Czyscik
             btnDetails.Click += BtnDetails_Click;
             btnAutostart.Click += BtnAutostart_Click;
             btnRefreshLog.Click += BtnRefreshLog_Click;
+
+            // Tray integration
+            SetupTrayIcon();
+            this.StateChanged += MainWindow_StateChanged;
+            this.Closing += MainWindow_Closing;
+        }
+
+        private void SetupTrayIcon()
+        {
+            try
+            {
+                notifyIcon = new WinForms.NotifyIcon();
+                notifyIcon.Icon = SystemIcons.Application;
+                notifyIcon.Text = "Czyścik";
+                notifyIcon.Visible = true;
+
+                var menu = new WinForms.ContextMenuStrip();
+                var openItem = new WinForms.ToolStripMenuItem("Otwórz");
+                openItem.Click += (s, e) => Dispatcher.BeginInvoke(new Action(() => { this.Show(); this.WindowState = WindowState.Normal; this.Activate(); }));
+                var quickItem = new WinForms.ToolStripMenuItem("Szybkie czyszczenie");
+                quickItem.Click += async (s, e) => await Dispatcher.BeginInvoke(new Func<Task>(async () => { await StartCleaningAsync(false); }));
+                var exitItem = new WinForms.ToolStripMenuItem("Zakończ");
+                exitItem.Click += (s, e) => { notifyIcon?.Dispose(); System.Windows.Application.Current.Shutdown(); };
+                menu.Items.Add(openItem);
+                menu.Items.Add(quickItem);
+                menu.Items.Add(new WinForms.ToolStripSeparator());
+                menu.Items.Add(exitItem);
+                notifyIcon.ContextMenuStrip = menu;
+
+                notifyIcon.DoubleClick += (s, e) => Dispatcher.BeginInvoke(new Action(() => { this.Show(); this.WindowState = WindowState.Normal; this.Activate(); }));
+            }
+            catch { }
+        }
+
+        private void MainWindow_StateChanged(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (this.WindowState == WindowState.Minimized)
+                {
+                    this.Hide();
+                }
+            }
+            catch { }
+        }
+
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try { notifyIcon?.Dispose(); }
+            catch { }
         }
 
         private void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
