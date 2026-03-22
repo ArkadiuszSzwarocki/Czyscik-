@@ -225,6 +225,7 @@ namespace Czyscik
             if (chkTemp.IsChecked == true) targets.Add(Environment.GetEnvironmentVariable("TEMP") ?? Path.GetTempPath());
             if (chkWindowsTemp.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Temp"));
             if (chkPrefetch.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Prefetch"));
+            if (chkWindowsUpdate.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SoftwareDistribution", "Download"));
             if (chkThumbs.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "Windows", "Explorer"));
             if (chkBrowsers.IsChecked == true)
             {
