@@ -3,6 +3,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Czyscik
 {
@@ -17,7 +19,16 @@ namespace Czyscik
             try { Directory.CreateDirectory(LogDir); } catch { }
         }
 
-        public static async Task<long> CleanPathAsync(string path, bool dryRun = false)
+        public class DryRunEntry
+        {
+            public string timestamp { get; set; }
+            public string action { get; set; }
+            public string? path { get; set; }
+            public long? size { get; set; }
+            public string? message { get; set; }
+        }
+
+        public static async Task<long> CleanPathAsync(string path, bool dryRun = false, List<DryRunEntry>? dryRunReport = null)
         {
             return await Task.Run(() => {
                 long freed = 0;
@@ -43,6 +54,7 @@ namespace Czyscik
                                     else
                                     {
                                         Log($"PREVIEW|{file}|{size}");
+                                        dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "PREVIEW", path = file, size = size });
                                     }
                                     freed += size;
                                 }
@@ -69,6 +81,7 @@ namespace Czyscik
                                     else
                                     {
                                         Log($"PREVIEW|{file}|{size}");
+                                        dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "PREVIEW", path = file, size = size });
                                     }
                                     freed += size;
                                 }
@@ -84,6 +97,11 @@ namespace Czyscik
                                     try { Directory.Delete(dir, true); } catch { }
                                 }
                             }
+                            else
+                            {
+                                // In dry-run, also report directories (size unknown)
+                                dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "PREVIEW_DIR", path = path, size = null });
+                            }
                         }
                     }
                     else if (File.Exists(path))
@@ -92,21 +110,41 @@ namespace Czyscik
                             var fi = new FileInfo(path);
                             long size = fi.Length;
                             if (!dryRun) { File.Delete(path); Log($"DEL|{path}|{size}"); }
-                            else { Log($"PREVIEW|{path}|{size}"); }
+                            else { Log($"PREVIEW|{path}|{size}"); dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "PREVIEW", path = path, size = size }); }
                             freed += size;
                         } catch (Exception ex) { Log($"SKIP|{path}|{ex.Message}"); }
                     }
                     else
                     {
                         Log($"MISSING|{path}");
+                        dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "MISSING", path = path });
                     }
                 }
                 catch (Exception ex)
                 {
                     Log($"ERR|{path}|{ex.Message}");
+                    dryRunReport?.Add(new DryRunEntry { timestamp = DateTime.Now.ToString("o"), action = "ERR", path = path, message = ex.Message });
                 }
                 return freed;
             });
+        }
+
+        public static string SaveDryRunReport(List<DryRunEntry> report)
+        {
+            try
+            {
+                Directory.CreateDirectory(LogDir);
+                var file = Path.Combine(LogDir, $"dryrun_{DateTime.Now:yyyyMMdd-HHmmss}.json");
+                var opts = new JsonSerializerOptions { WriteIndented = true };
+                File.WriteAllText(file, JsonSerializer.Serialize(report, opts));
+                Log($"DRYRUN|SAVED|{file}");
+                return file;
+            }
+            catch (Exception ex)
+            {
+                Log($"DRYRUN|ERR|{ex.Message}");
+                return string.Empty;
+            }
         }
 
         public static void Log(string line)

@@ -396,13 +396,14 @@ namespace Czyscik
 
             int total = targets.Count + (chkRecycle.IsChecked == true ? 1 : 0); int done = 0;
             Cleaner.Log("--- RUN START ---");
+            List<Cleaner.DryRunEntry>? dryReport = dryRun ? new List<Cleaner.DryRunEntry>() : null;
             try
             {
                 foreach (var t in targets)
                 {
                     if (cts.IsCancellationRequested) break;
                     lblStatus.Text = $"Czyszczenie: {t}";
-                    long freed = await Cleaner.CleanPathAsync(t, dryRun);
+                    long freed = await Cleaner.CleanPathAsync(t, dryRun, dryReport);
                     totalFreed += Math.Max(0, freed);
                     done++;
                     progressBar.Value = Math.Round(100.0 * done / Math.Max(1, total));
@@ -420,6 +421,13 @@ namespace Czyscik
                 lblStatus.Text = dryRun ? "Podgląd zakończony" : "Zakończono";
                 Cleaner.Log($"TOTAL_FREED|{totalFreed}");
                 LoadLogToTextbox();
+                // If dry-run, save detailed report JSON
+                if (dryRun && dryReport != null)
+                {
+                    var rpt = Cleaner.SaveDryRunReport(dryReport);
+                    if (!string.IsNullOrEmpty(rpt)) MessageBox.Show($"Raport Dry-Run zapisany: {rpt}", "Dry-Run", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else MessageBox.Show("Nie udało się zapisać raportu Dry-Run.", "Dry-Run", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
                 // Aktualizacja głównego licznika odzyskanego miejsca (na podstawie rozmiaru usuniętych plików)
                 lblFreed.Text = $"Odzyskane: {FormatBytes(totalFreed)} (Δ {FormatBytes(Math.Max(0, freeAfter - freeBefore))})";
             }
