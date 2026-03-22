@@ -56,11 +56,14 @@ namespace Czyscik
                 var menu = new WinForms.ContextMenuStrip();
                 var openItem = new WinForms.ToolStripMenuItem("Otwórz");
                 openItem.Click += (s, e) => Dispatcher.BeginInvoke(new Action(() => { this.Show(); this.WindowState = WindowState.Normal; this.Activate(); }));
+                var openDryRunItem = new WinForms.ToolStripMenuItem("Otwórz raport Dry-Run");
+                openDryRunItem.Click += (s, e) => Dispatcher.BeginInvoke(new Action(() => { BtnOpenDryRun_Click(null, null); }));
                 var quickItem = new WinForms.ToolStripMenuItem("Szybkie czyszczenie");
                 quickItem.Click += async (s, e) => await Dispatcher.BeginInvoke(new Func<Task>(async () => { await StartCleaningAsync(false); }));
                 var exitItem = new WinForms.ToolStripMenuItem("Zakończ");
                 exitItem.Click += (s, e) => { notifyIcon?.Dispose(); System.Windows.Application.Current.Shutdown(); };
                 menu.Items.Add(openItem);
+                menu.Items.Add(openDryRunItem);
                 menu.Items.Add(quickItem);
                 menu.Items.Add(new WinForms.ToolStripSeparator());
                 menu.Items.Add(exitItem);
