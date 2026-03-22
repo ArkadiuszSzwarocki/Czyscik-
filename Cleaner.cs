@@ -24,34 +24,64 @@ namespace Czyscik
                 {
                     if (Directory.Exists(path))
                     {
-                        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+                        // Special-case: Prefetch folder — only top-level .pf files
+                        if (string.Equals(new DirectoryInfo(path).Name, "Prefetch", StringComparison.OrdinalIgnoreCase))
                         {
-                            try
+                            foreach (var file in Directory.EnumerateFiles(path, "*.pf", SearchOption.TopDirectoryOnly))
                             {
-                                var fi = new FileInfo(file);
-                                long size = fi.Length;
-                                if (!dryRun)
+                                try
                                 {
-                                    fi.IsReadOnly = false;
-                                    File.Delete(file);
-                                    Log($"DEL|{file}|{size}");
+                                    var fi = new FileInfo(file);
+                                    long size = fi.Length;
+                                    if (!dryRun)
+                                    {
+                                        fi.IsReadOnly = false;
+                                        File.Delete(file);
+                                        Log($"DEL|{file}|{size}");
+                                    }
+                                    else
+                                    {
+                                        Log($"PREVIEW|{file}|{size}");
+                                    }
+                                    freed += size;
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    Log($"PREVIEW|{file}|{size}");
+                                    Log($"SKIP|{file}|{ex.Message}");
                                 }
-                                freed += size;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log($"SKIP|{file}|{ex.Message}");
                             }
                         }
-                        if (!dryRun)
+                        else
                         {
-                            foreach (var dir in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                            foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                             {
-                                try { Directory.Delete(dir, true); } catch { }
+                                try
+                                {
+                                    var fi = new FileInfo(file);
+                                    long size = fi.Length;
+                                    if (!dryRun)
+                                    {
+                                        fi.IsReadOnly = false;
+                                        File.Delete(file);
+                                        Log($"DEL|{file}|{size}");
+                                    }
+                                    else
+                                    {
+                                        Log($"PREVIEW|{file}|{size}");
+                                    }
+                                    freed += size;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log($"SKIP|{file}|{ex.Message}");
+                                }
+                            }
+                            if (!dryRun)
+                            {
+                                foreach (var dir in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                                {
+                                    try { Directory.Delete(dir, true); } catch { }
+                                }
                             }
                         }
                     }
