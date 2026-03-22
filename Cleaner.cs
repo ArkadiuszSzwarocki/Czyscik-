@@ -9,6 +9,7 @@ namespace Czyscik
     {
         private static readonly string LogDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Czyscik");
         private static readonly string LogFile = Path.Combine(LogDir, "czyscik.log");
+        private static readonly string JsonLogFile = Path.Combine(LogDir, "czyscik.jsonl");
 
         static Cleaner()
         {
@@ -81,9 +82,47 @@ namespace Czyscik
         {
             try
             {
+                // Human-readable legacy log
                 File.AppendAllText(LogFile, DateTime.Now.ToString("s") + " " + line + Environment.NewLine);
             }
             catch { }
+            try
+            {
+                // Also write structured JSONL
+                var obj = ParseLogLine(line);
+                var json = System.Text.Json.JsonSerializer.Serialize(obj);
+                File.AppendAllText(JsonLogFile, json + Environment.NewLine);
+            }
+            catch { }
+        }
+
+        private static object ParseLogLine(string line)
+        {
+            // Expected formats: TYPE|path|size or TYPE|path|message or other
+            var parts = line.Split('|');
+            var type = parts.Length > 0 ? parts[0] : "INFO";
+            string path = parts.Length > 1 ? parts[1] : null;
+            long? size = null;
+            string message = null;
+            if (parts.Length > 2)
+            {
+                if (long.TryParse(parts[2], out var s)) size = s;
+                else message = parts[2];
+            }
+            // if there are more parts, append them to message
+            if (parts.Length > 3)
+            {
+                var rest = string.Join('|', parts, 3, parts.Length - 3);
+                message = (message == null) ? rest : (message + "|" + rest);
+            }
+            return new
+            {
+                timestamp = DateTime.Now.ToString("o"),
+                type = type,
+                path = path,
+                size = size,
+                message = message
+            };
         }
 
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]

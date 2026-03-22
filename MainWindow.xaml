@@ -1,7 +1,8 @@
 <Window x:Class="Czyscik.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Czyścik — Pro" Height="420" Width="700">
+        Title="Czyścik — Pro" Height="560" Width="960" MinHeight="480" MinWidth="720">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
     <Grid Margin="12">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -21,33 +22,43 @@
             <CheckBox x:Name="chkTurbo" Content="Turbo Cleaner (preset)" Margin="0,4" />
             <CheckBox x:Name="chkDryRun" Content="Suchy bieg (Preview)" Margin="0,4" />
             <CheckBox x:Name="chkConfirmEach" Content="Potwierdzenie przed czyszczeniem każdego katalogu" Margin="0,4" />
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Button x:Name="btnStart" Content="Start" Width="100" Click="BtnStart_Click" />
-                <Button x:Name="btnPreview" Content="Preview" Width="100" Margin="6,0,0,0" Click="BtnPreview_Click" />
-                <Button x:Name="btnCancel" Content="Anuluj" Width="100" Margin="6,0,0,0" Click="BtnCancel_Click" IsEnabled="False" />
-            </StackPanel>
+            <WrapPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Left" ItemHeight="30" ItemWidth="110">
+                <Button x:Name="btnStart" Content="Start" Width="110" />
+                <Button x:Name="btnPreview" Content="Preview" Width="110" Margin="6,0,0,0" />
+                <Button x:Name="btnCancel" Content="Anuluj" Width="110" Margin="6,0,0,0" IsEnabled="False" />
+            </WrapPanel>
         </StackPanel>
 
         <StackPanel Grid.Column="1" Margin="6" VerticalAlignment="Top">
             <TextBlock Text="Ścieżki (wybierz lub dodaj własne)" FontWeight="Bold" />
-            <ListBox x:Name="lstPaths" Height="150" Margin="0,6" />
-            <DockPanel Margin="0,6">
-                <TextBox x:Name="txtNewPath" DockPanel.Dock="Left" Width="340" />
-                <Button x:Name="btnAdd" Content="Dodaj" Width="60" Margin="6,0,0,0" Click="BtnAdd_Click" />
-                <Button x:Name="btnPick" Content="Wybierz folder..." Width="120" Margin="6,0,0,0" Click="BtnPick_Click" />
-                <Button x:Name="btnRemove" Content="Usuń" Width="60" Margin="6,0,0,0" Click="BtnRemove_Click" />
-                <Button x:Name="btnDetails" Content="Pokaż pliki" Width="100" Margin="6,0,0,0" Click="BtnDetails_Click" />
-            </DockPanel>
+            <ListBox x:Name="lstPaths" Margin="0,6" VerticalAlignment="Stretch" MinHeight="140" MaxHeight="300" />
+            <Grid Margin="0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtNewPath" Grid.Column="0" HorizontalAlignment="Stretch" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="6,0,0,0">
+                    <Button x:Name="btnAdd" Content="Dodaj" Width="70" Margin="0,0,6,0" />
+                    <Button x:Name="btnPick" Content="Wybierz..." Width="90" Margin="0,0,6,0" />
+                    <Button x:Name="btnRemove" Content="Usuń" Width="70" Margin="0,0,6,0" />
+                    <Button x:Name="btnDetails" Content="Pokaż pliki" Width="100" />
+                    <Button x:Name="btnAutostart" Content="Autostart" Width="90" Margin="6,0,0,0" />
+                </StackPanel>
+            </Grid>
 
             <TextBlock Text="Postęp" FontWeight="Bold" Margin="0,8,0,0" />
             <ProgressBar x:Name="progressBar" Height="20" Minimum="0" Maximum="100" Margin="0,6" />
             <TextBlock x:Name="lblStatus" Text="Gotowy" Margin="0,6" />
+            <TextBlock x:Name="lblBefore" Text="Wolne przed: -" Margin="0,6" />
+            <TextBlock x:Name="lblAfter" Text="Wolne po: -" Margin="0,6" />
             <TextBlock x:Name="lblFreed" Text="Odzyskane: 0 B" Margin="0,6" />
             <TextBlock x:Name="lblLog" Text="Log:" Margin="0,6" />
             <DockPanel>
-                <Button x:Name="btnRefreshLog" Content="Odśwież log" Width="100" DockPanel.Dock="Left" Click="BtnRefreshLog_Click" />
+                <Button x:Name="btnRefreshLog" Content="Odśwież log" Width="100" DockPanel.Dock="Left" />
             </DockPanel>
-            <TextBox x:Name="txtLog" Height="140" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Margin="0,6" />
+            <TextBox x:Name="txtLog" Height="160" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Margin="0,6" />
         </StackPanel>
     </Grid>
+    </ScrollViewer>
 </Window>
