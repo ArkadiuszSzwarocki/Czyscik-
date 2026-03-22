@@ -27,6 +27,7 @@
             <WrapPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Left" ItemHeight="30" ItemWidth="110">
                 <Button x:Name="btnStart" Content="Start" Width="110" />
                 <Button x:Name="btnPreview" Content="Preview" Width="110" Margin="6,0,0,0" />
+                    <Button x:Name="btnCheckUpdates" Content="Sprawdź aktualizacje" Width="160" Margin="6,0,0,0" />
                 <Button x:Name="btnCancel" Content="Anuluj" Width="110" Margin="6,0,0,0" IsEnabled="False" />
             </WrapPanel>
         </StackPanel>

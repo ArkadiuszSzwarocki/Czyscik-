@@ -21,6 +21,7 @@ namespace Czyscik
             // Podpinamy event handlerzy programowo (XAML nie zawiera Click)
             btnStart.Click += BtnStart_Click;
             btnPreview.Click += BtnPreview_Click;
+            btnCheckUpdates.Click += BtnCheckUpdates_Click;
             btnCancel.Click += BtnCancel_Click;
             btnAdd.Click += BtnAdd_Click;
             btnPick.Click += BtnPick_Click;
@@ -28,6 +29,29 @@ namespace Czyscik
             btnDetails.Click += BtnDetails_Click;
             btnAutostart.Click += BtnAutostart_Click;
             btnRefreshLog.Click += BtnRefreshLog_Click;
+        }
+
+        private async void BtnCheckUpdates_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                btnCheckUpdates.IsEnabled = false;
+                var res = await AutoUpdater.CheckForUpdatesAsync();
+                if (res.available)
+                {
+                    MessageBox.Show($"Dostępna aktualizacja: {res.latestTag}\n{res.url}", "Aktualizacja", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Brak dostępnych aktualizacji.", "Aktualizacja", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd podczas sprawdzania aktualizacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                Cleaner.Log("UPDATE|ERR|" + ex.Message);
+            }
+            finally { btnCheckUpdates.IsEnabled = true; }
         }
 
         private void BtnAutostart_Click(object? sender, RoutedEventArgs e)
