@@ -15,6 +15,7 @@
             <CheckBox x:Name="chkWindowsTemp" Content="C:\\Windows\\Temp" IsChecked="True" />
             <CheckBox x:Name="chkWindowsUpdate" Content="Wyczyść Windows Update (SoftwareDistribution\\Download)" IsChecked="False" />
             <CheckBox x:Name="chkPrefetch" Content="Prefetch" IsChecked="False" />
+            <CheckBox x:Name="chkSystemLogs" Content="Czyszczenie logów systemowych (Windows Logs) - zaawansowane" IsChecked="False" />
             <CheckBox x:Name="chkThumbs" Content="Thumbnails cache" IsChecked="False" />
             <CheckBox x:Name="chkRecycle" Content="Opróżnij Kosz" IsChecked="False" />
             <CheckBox x:Name="chkBrowsers" Content="Cache przeglądarek (Chrome/Edge)" IsChecked="True" />

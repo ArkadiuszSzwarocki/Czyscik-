@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -174,6 +175,39 @@ namespace Czyscik
                 }
                 catch (Exception ex) { Log($"RECYCLE|ERR|{ex.Message}"); }
                 return -1L;
+            });
+        }
+
+        public static Task<long> CleanEventLogsAsync(bool dryRun = false)
+        {
+            return Task.Run(() =>
+            {
+                long cleared = 0;
+                try
+                {
+                    var logs = EventLog.GetEventLogs();
+                    foreach (var l in logs)
+                    {
+                        try
+                        {
+                            var name = l.Log;
+                            if (dryRun)
+                            {
+                                Log($"EVENTLOG|PREVIEW|{name}");
+                            }
+                            else
+                            {
+                                try { l.Clear(); Log($"EVENTLOG|CLEARED|{name}"); }
+                                catch (Exception ex) { Log($"EVENTLOG|ERR|{name}|{ex.Message}"); }
+                            }
+                            cleared++;
+                        }
+                        catch (Exception ex) { Log($"EVENTLOG|ERR|{l.Log}|{ex.Message}"); }
+                        finally { l.Dispose(); }
+                    }
+                }
+                catch (Exception ex) { Log($"EVENTLOG|ERR|{ex.Message}"); }
+                return cleared;
             });
         }
     }

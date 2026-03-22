@@ -225,6 +225,7 @@ namespace Czyscik
             if (chkTemp.IsChecked == true) targets.Add(Environment.GetEnvironmentVariable("TEMP") ?? Path.GetTempPath());
             if (chkWindowsTemp.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Temp"));
             if (chkPrefetch.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Prefetch"));
+            var cleanEventLogsRequested = chkSystemLogs.IsChecked == true;
             if (chkWindowsUpdate.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SoftwareDistribution", "Download"));
             if (chkThumbs.IsChecked == true) targets.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "Windows", "Explorer"));
             if (chkBrowsers.IsChecked == true)
@@ -252,6 +253,10 @@ namespace Czyscik
                 }
 
                 if (chkRecycle.IsChecked == true && !cts.IsCancellationRequested) await Cleaner.EmptyRecycleBinAsync(dryRun);
+                if (cleanEventLogsRequested && !cts.IsCancellationRequested)
+                {
+                    await Cleaner.CleanEventLogsAsync(dryRun);
+                }
                 // wolne miejsce po
                 long freeAfter = GetTotalFreeBytes();
                 lblAfter.Text = $"Wolne po: {FormatBytes(freeAfter)}";
