@@ -259,6 +259,38 @@ namespace Czyscik
                 targets.Add(Path.Combine(local, "Microsoft", "Edge", "User Data", "Default", "Cache"));
             }
 
+            // Expert-mode additional targets
+            if (chkExpertMode.IsChecked == true || chkExpertBrowsers.IsChecked == true || chkExpertLaunchers.IsChecked == true || chkExpertCrashDumps.IsChecked == true)
+            {
+                var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                if (chkExpertMode.IsChecked == true || chkExpertBrowsers.IsChecked == true)
+                {
+                    // Additional browser caches (dup-safe)
+                    var chrome = Path.Combine(local, "Google", "Chrome", "User Data", "Default", "Cache");
+                    var edge = Path.Combine(local, "Microsoft", "Edge", "User Data", "Default", "Cache");
+                    if (Directory.Exists(chrome) && !targets.Contains(chrome)) targets.Add(chrome);
+                    if (Directory.Exists(edge) && !targets.Contains(edge)) targets.Add(edge);
+                }
+                if (chkExpertMode.IsChecked == true || chkExpertLaunchers.IsChecked == true)
+                {
+                    // Steam downloading/temp folder
+                    var progx86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                    var steamDown = Path.Combine(progx86 ?? "C:\\Program Files (x86)", "Steam", "steamapps", "downloading");
+                    if (Directory.Exists(steamDown) && !targets.Contains(steamDown)) targets.Add(steamDown);
+                    // Epic cached installs
+                    var epic = Path.Combine(local, "EpicGamesLauncher", "Saved", "webcache");
+                    if (Directory.Exists(epic) && !targets.Contains(epic)) targets.Add(epic);
+                }
+                if (chkExpertMode.IsChecked == true || chkExpertCrashDumps.IsChecked == true)
+                {
+                    // Crash dumps
+                    var minidump = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Minidump");
+                    var crashLocal = Path.Combine(local, "CrashDumps");
+                    if (Directory.Exists(minidump) && !targets.Contains(minidump)) targets.Add(minidump);
+                    if (Directory.Exists(crashLocal) && !targets.Contains(crashLocal)) targets.Add(crashLocal);
+                }
+            }
+
             foreach (var it in lstPaths.Items) if (it is string s && !string.IsNullOrWhiteSpace(s) && !targets.Contains(s)) targets.Add(s);
 
             int total = targets.Count + (chkRecycle.IsChecked == true ? 1 : 0); int done = 0;
